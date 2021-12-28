@@ -65,18 +65,50 @@ int main()
 최단경로를 구하는 방법은 크게 4가지의 부분으로 나뉩니다.
 
 - 1.시작정점 처리
-
+```c
+for(int i=1; i<=n; i++) {
+    for(int j=1; j<=n; j++) {
+      ...
+      path[i][j] = i;
+    }
+  }
+```
 
 시작정점을 처리해 주는 이유는 단순히 어디서 시작하는가?에 대한 정보를 넣기 위함입니다. 추후에 재귀함수로 최단경로를 추적할 때, 시작 역할을 해 줍니다.
 
 - 2.경로 저장
 
+```c
+for(int i=1; i<=n; i++) {
+    for(int j=1; j<=n; j++) {
+      for(int k=1; k<=n; k++) {
+        if(adj[j][k] > adj[j][i] + adj[i][k]) {
+          ...
+          path[j][k] = i;
+        }
+      }
+    }
+  }
+```
 
 가능한 모든 경로를 저장합니다. 플로이드 와샬을 구현할 때에는 j와 k가 연결되었다는 것을 인접행렬을 이용해 adj[j][k] = 가중치의 형식으로 저장하는데, 이를 이용해서 j -> k로 가는 경로에 i를 거친다를 path[j][k] = i 의 형태로 저장해 줍니다.
 
 
 - 3.경로 역추적
+```c
+vector<int> SP;
 
+void fp(int from, int to) {
+  int prev = path[from][to];
+  if(from == prev) {
+    SP.push_back(from);
+    return;
+  }
+
+  fp(from, prev);
+  fp(prev, to);
+}
+```
 
 시작점과 그 다음점을 가지고 재귀함수를 구현해 경로를 찾습니다.
 만약 from -> to로 가면서 거친 정점을 prev에 저장해 놓은 다음에, 시작점과 prev가 같다면? 이것은 최단경로라는 것을 의미합니다.
@@ -88,15 +120,22 @@ int main()
 
 
 - 4.경로 출력
-
+```c
+fp(1, n);
+  SP.push_back(n);
+  for(int i=0; i<SP.size(); i++) {
+    printf("%d ", SP[i]);
+  }
+ ```
 
 굳이 이걸 포함시켜야 하나 하는 생각은 들었지만... 최단경로를 모두 구했다면 경로를 출력해 줍니다.
 하나 주의해야 할 것이 있다면, 역추적을 완료했을 때 배열에는 도착정점이 들어있지 않습니다. 이것을 포함시켜 주어야 합니다.
 
-
-
+----------------------------------------------------------------------------------------------------------------
 
 참고자료 :
-<https://koosaga.com/2>,
-<https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm>,
+<https://koosaga.com/2>
+
+<https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm>
+
 <https://eazymean.tistory.com/384>
